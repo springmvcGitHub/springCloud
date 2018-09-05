@@ -1,0 +1,27 @@
+server:
+  servlet:
+    context-path: /testA
+  port: 8091
+spring:
+  application:
+    name: s1
+  datasource:
+    primary:
+      jdbc-url:  jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull
+      #配置成多数据源时不能使用默认的url，需要使用jdbc-url
+      username: root
+      #password: 1234
+      password: 1111a!
+      driver-class-name: com.mysql.jdbc.Driver
+    second:
+      jdbc-url:  jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull
+      username: root
+      #password: 1234
+      password: 1111a!
+      driver-class-name: com.mysql.jdbc.Driver
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8090/regist/eureka/
