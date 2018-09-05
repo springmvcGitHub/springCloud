@@ -2,6 +2,9 @@ package com.example.test.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.test.service.RestfulServiceImpl;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,5 +301,34 @@ public class UserController {
 //        }
         System.out.println("------code"+code);
         return code+"-----";
+    }
+
+    /**
+     * 登陆
+     *
+     * @param username 用户名
+     * @param password 密码
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ResponseBody
+    public String login(String username, String password) {
+        // 从SecurityUtils里边创建一个 subject
+        Subject subject = SecurityUtils.getSubject();
+        // 在认证提交前准备 token（令牌）
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        // 执行认证登陆
+        subject.login(token);
+        //根据权限，指定返回数据
+        //String role = userMapper.getRole(username);
+        String querySql = "SELECT rule from rule a LEFT JOIN appuser b ON a.userId = b.id WHERE b.userName='" + username + "'";
+        Map<String, Object> map = primaryJdbcTemplate.queryForMap(querySql);
+        String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+        if ("user".equals(role)) {
+            return "欢迎登陆";
+        }
+        if ("admin".equals(role)) {
+            return "欢迎来到管理员页面";
+        }
+        return "权限错误！";
     }
 }
