@@ -297,6 +297,6 @@ public class UserController {
 //            e.printStackTrace();
 //        }
         System.out.println("------code"+code);
-        return code;
+        return code+"-----";
     }
 }
