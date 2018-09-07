@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 public class DataSourceConfig {
 
     /**
-     * 加载数据源
+     * 加载主数据源----------------------------------------------------------------------------------
      *
      * @return
      */
@@ -30,7 +30,18 @@ public class DataSourceConfig {
     }
 
     /**
-     * 加载数据源
+     * primaryJdbcTemplate
+     *
+     * @param dataSource
+     * @return
+     */
+    @Bean(name = "primaryJdbcTemplate")
+    public JdbcTemplate primaryJdbcTemplate(@Qualifier(value = "primaryDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    /**
+     * 加载second数据源----------------------------------------------------------------------------------
      *
      * @return
      */
@@ -42,24 +53,36 @@ public class DataSourceConfig {
     }
 
     /**
-     * 初始化JdbcTemplate
-     *
-     * @param dataSource
-     * @return
-     */
-    @Bean(name = "primaryJdbcTemplate")
-    public JdbcTemplate primaryJdbcTemplate(@Qualifier(value = "primaryDataSource") DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    /**
-     * 初始化JdbcTemplate
+     * secondJdbcTemplate
      *
      * @param dataSource
      * @return
      */
     @Bean(name = "secondJdbcTemplate")
     public JdbcTemplate secondJdbcTemplate(@Qualifier(value = "secondDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    /**
+     * 加载myCat数据源----------------------------------------------------------------------------------
+     *
+     * @return
+     */
+    @Bean(name = "myCatDataSource")
+    @Qualifier(value = "myCatDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.third")
+    public DataSource myCatDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    /**
+     * myCatJdbcTemplate
+     *
+     * @param dataSource
+     * @return
+     */
+    @Bean(name = "myCatJdbcTemplate")
+    public JdbcTemplate myCatJdbcTemplate(@Qualifier(value = "myCatDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 }

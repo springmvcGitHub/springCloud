@@ -19,6 +19,17 @@ spring:
       #password: 1234
       password: 1111a!
       driver-class-name: com.mysql.jdbc.Driver
+    third: #mycat连接方式及配置
+      jdbc-url:  jdbc:mysql://localhost:8066/TESTDB?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull
+      username: root
+      #password: 1234
+      password: mycatUser
+      driver-class-name: com.mysql.jdbc.Driver
+#  jpa:
+#    database: mysql
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: none
 eureka:
   client:
     register-with-eureka: true

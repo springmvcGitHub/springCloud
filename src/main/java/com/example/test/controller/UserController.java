@@ -45,6 +45,10 @@ public class UserController {
     @Qualifier(value = "secondJdbcTemplate")
     private JdbcTemplate secondJdbcTemplate;
 
+    @Autowired
+    @Qualifier(value = "myCatJdbcTemplate")
+    private JdbcTemplate myCatJdbcTemplate;
+
     private static SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -171,25 +175,27 @@ public class UserController {
     public String addUser(String userName, int counts) {
         int maxId = 1;
         String queryMaxId = "SELECT max(id) as maxId FROM user";
-        Map<String, Object> map = secondJdbcTemplate.queryForMap(queryMaxId);
+        Map<String, Object> map = myCatJdbcTemplate.queryForMap(queryMaxId);
         if (null != map && null != map.get("maxId")) {
             maxId = Integer.parseInt(String.valueOf(map.get("maxId"))) + 1;
         }
         if (0 == counts) {
             counts = 1000;
         }
+        long start = System.currentTimeMillis();
         int insertCount = 0;
         for (int i = 0; i < counts; i++) {
             String insertSql = "insert into user(id,userName) value( " + maxId + ",'" + userName + "');";
-            int count = secondJdbcTemplate.update(insertSql);
+            int count = myCatJdbcTemplate.update(insertSql);
             if (count > 0) {
                 maxId++;
                 insertCount++;
             }
         }
-
+        long end = System.currentTimeMillis();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("count", insertCount);
+        jsonObject.put("time", (end - start));
         return jsonObject.toString();
     }
 
@@ -241,6 +247,7 @@ public class UserController {
         if (null != map) {
             maxId = null == map.get("maxId") ? 1 : Integer.parseInt(String.valueOf(map.get("maxId")));
         }
+        long start = System.currentTimeMillis();
         int resultCount = 0;
         for (int i = 0; i < count; i++) {
             int inviteCode = getInviteCode(String.valueOf(maxId));
@@ -252,10 +259,12 @@ public class UserController {
             }
             maxId++;
         }
+        long end = System.currentTimeMillis();
         JSONObject result = new JSONObject();
         result.put("success", true);
         result.put("totalCount", count);
         result.put("successCount", resultCount);
+        result.put("time", (end-start));
         return result.toString();
     }
 
@@ -362,5 +371,21 @@ public class UserController {
             return "欢迎来到管理员页面";
         }
         return "权限错误！";
+    }
+
+    @RequestMapping(value = "testShardingAdd", method = RequestMethod.POST)
+    @ResponseBody
+    public String testShardingAdd() {
+        int counts = 0;
+        for (int i = 0; i < 10; i++) {
+            String insertSql = "insert into t_order(id,orderId) value(" + i + "," + (i + 1) + ")";
+            int count = secondJdbcTemplate.update(insertSql);
+            if (count > 0) {
+                counts++;
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("count", counts);
+        return jsonObject.toString();
     }
 }
