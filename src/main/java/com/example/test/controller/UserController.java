@@ -1,6 +1,7 @@
 package com.example.test.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.test.pojo.User;
 import com.example.test.service.RestfulServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -386,6 +387,16 @@ public class UserController {
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("count", counts);
+        return jsonObject.toString();
+    }
+
+
+    @RequestMapping(value = "getMethod", method = RequestMethod.POST)
+    //@ResponseBody
+    public String getMethod(@RequestBody User user) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", user.getId());
+        jsonObject.put("userName", user.getUserName());
         return jsonObject.toString();
     }
 }
