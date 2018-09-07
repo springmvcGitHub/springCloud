@@ -34,8 +34,8 @@ public class CustomRealm extends AuthorizingRealm {
         System.out.println("————身份认证方法————");
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         // 从数据库获取对应用户名密码的用户
-        String queryPwdSql = "SELECT password FROM appuser WHERE userName='" + token.getUsername() + "'";
-        Map<String, Object> map = primaryJdbcTemplate.queryForMap(queryPwdSql);
+        String queryPwdSql = "SELECT * FROM appuser WHERE userName='" + token.getUsername() + "'";
+        Map<String, Object> map = primaryJdbcTemplate.queryForMap(queryPwdSql,null);
         String password = null == map.get("password") ? null : String.valueOf(map.get("password"));
         //String password = userMapper.getPassword(token.getUsername());
         if (null == password) {

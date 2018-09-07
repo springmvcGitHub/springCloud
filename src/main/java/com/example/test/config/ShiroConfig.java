@@ -26,11 +26,11 @@ public class ShiroConfig {
 //        //游客，开发权限
 //        filterChainDefinitionMap.put("/guest/**", "anon");
 //        //用户，需要角色权限 “user”
-//        filterChainDefinitionMap.put("/user/getDbData", "roles[admin,user]");
+//        //filterChainDefinitionMap.put("/user/getDbData", "roles[admin,user]");
 //        //管理员，需要角色权限 “admin”
 //        filterChainDefinitionMap.put("/admin/**", "roles[admin]");
 //        //开放登陆接口
-//        filterChainDefinitionMap.put("/login", "anon");
+//        filterChainDefinitionMap.put("/user/login", "anon");
 //        //其余接口一律拦截
 //        //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截
 //        filterChainDefinitionMap.put("/**", "authc");

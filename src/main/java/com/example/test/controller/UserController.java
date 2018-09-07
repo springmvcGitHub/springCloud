@@ -161,6 +161,38 @@ public class UserController {
         return jsonObject.toString();
     }
 
+    /**
+     * 测试mycat，测试数据库插入
+     *
+     * @return
+     */
+    @RequestMapping(value = "addUser", method = RequestMethod.POST)
+    @ResponseBody
+    public String addUser(String userName, int counts) {
+        int maxId = 1;
+        String queryMaxId = "SELECT max(id) as maxId FROM user";
+        Map<String, Object> map = secondJdbcTemplate.queryForMap(queryMaxId);
+        if (null != map && null != map.get("maxId")) {
+            maxId = Integer.parseInt(String.valueOf(map.get("maxId"))) + 1;
+        }
+        if (0 == counts) {
+            counts = 1000;
+        }
+        int insertCount = 0;
+        for (int i = 0; i < counts; i++) {
+            String insertSql = "insert into user(id,userName) value( " + maxId + ",'" + userName + "');";
+            int count = secondJdbcTemplate.update(insertSql);
+            if (count > 0) {
+                maxId++;
+                insertCount++;
+            }
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("count", insertCount);
+        return jsonObject.toString();
+    }
+
     private void updateInvite() {
         if (blockingQueue.size() == 0) {
             return;
@@ -299,8 +331,8 @@ public class UserController {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        System.out.println("------code"+code);
-        return code+"-----";
+        System.out.println("------code" + code);
+        return code + "-----";
     }
 
     /**
