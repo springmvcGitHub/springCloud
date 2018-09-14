@@ -265,7 +265,7 @@ public class UserController {
         result.put("success", true);
         result.put("totalCount", count);
         result.put("successCount", resultCount);
-        result.put("time", (end-start));
+        result.put("time", (end - start));
         return result.toString();
     }
 
@@ -365,13 +365,24 @@ public class UserController {
         String querySql = "SELECT rule from rule a LEFT JOIN appuser b ON a.userId = b.id WHERE b.userName='" + username + "'";
         Map<String, Object> map = primaryJdbcTemplate.queryForMap(querySql);
         String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+        JSONObject jsonObject = new JSONObject();
+        String msg = "";
+        boolean success = false;
+        String ssoId = "";
         if ("user".equals(role)) {
-            return "欢迎登陆";
+            msg = "登陆成功，user权限";
+            success = true;
+            ssoId = subject.getSession().getId().toString();
         }
         if ("admin".equals(role)) {
-            return "欢迎来到管理员页面";
+            msg = "登陆成功，admin权限";
+            success = true;
+            ssoId = subject.getSession().getId().toString();
         }
-        return "权限错误！";
+        jsonObject.put("success", success);
+        jsonObject.put("msg", msg);
+        jsonObject.put("ssoId", ssoId);
+        return jsonObject.toString();
     }
 
     @RequestMapping(value = "testShardingAdd", method = RequestMethod.POST)
