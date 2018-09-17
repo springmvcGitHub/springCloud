@@ -3,6 +3,7 @@ package com.example.test.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.test.pojo.User;
 import com.example.test.service.RestfulServiceImpl;
+import com.example.test.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +39,8 @@ public class UserController {
 
     @Autowired
     private RestfulServiceImpl restfulService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     @Qualifier(value = "primaryJdbcTemplate")
@@ -49,6 +53,11 @@ public class UserController {
     @Autowired
     @Qualifier(value = "myCatJdbcTemplate")
     private JdbcTemplate myCatJdbcTemplate;
+
+    @Value("${server.port}")
+    private String serverPort;
+    @Value("${spring.datasource.primary.jdbc-url}")
+    private String jdbcUrl;
 
     private static SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 
@@ -197,6 +206,20 @@ public class UserController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("count", insertCount);
         jsonObject.put("time", (end - start));
+        return jsonObject.toString();
+    }
+
+    /**
+     * 测试事务
+     * @param userName
+     * @return
+     */
+    @RequestMapping(value = "addUserTran", method = RequestMethod.POST)
+    @ResponseBody
+    public String addUserTran(String userName) {
+        boolean result = userService.addUserTranImpl(userName);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("success", result);
         return jsonObject.toString();
     }
 
@@ -380,7 +403,7 @@ public class UserController {
             ssoId = subject.getSession().getId().toString();
         }
         jsonObject.put("success", success);
-        jsonObject.put("msg", msg);
+        jsonObject.put("msg", msg+",serverPort:"+serverPort+",jdbcUrl:"+jdbcUrl);
         jsonObject.put("ssoId", ssoId);
         return jsonObject.toString();
     }
