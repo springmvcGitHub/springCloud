@@ -19,34 +19,41 @@ public class UserService {
     @Qualifier(value = "primaryJdbcTemplate")
     private JdbcTemplate primaryJdbcTemplate;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED,value = "primaryTransactionManager")
-    public boolean addUserTranImpl(String nickName){
+    @Transactional(isolation = Isolation.READ_COMMITTED, value = "primaryTransactionManager")
+    public boolean addUserTranImpl(String nickName) {
         int count = 0;
-//        try {
-            String userKey = UUID.randomUUID().toString().replace("-", "");
-            //nickName = "\uD83C\uDF3C 妙盒子\uD83C\uDF3C";
-            count = addUser(nickName,userKey);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-//            throw e;
+        String userKey = UUID.randomUUID().toString().replace("-", "");
+        count = addUser(nickName, userKey);
+        int count2 = addUser2(nickName, userKey);
+//        if (true) {
+//            throw new RuntimeException("111");
 //        }
-        if(count>0){
+        if (count > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    private int addUser(String nickName,String userKey){
-        String insertSql = "INSERT appuser(nickName,userKey,create_date) VALUES('" + nickName + "','" + userKey + "',NOW()) ";
-        int count =  primaryJdbcTemplate.update(insertSql);
-        count =  primaryJdbcTemplate.update(insertSql);
-        String querySql = "SELECT count(*) as count FROM appuser ";
-        Map<String,Object> userMap = primaryJdbcTemplate.queryForMap(querySql);//queryForList(querySql, Appuser.class);
-        int userCount = Integer.parseInt(userMap.get("count").toString());
-        if(true) {
+
+    private int addUser(String nickName, String userKey) {
+        String insertSql = "INSERT test2.appuser(nickName,userKey,create_date) VALUES('" + nickName + "','" + userKey + "',NOW()) ";
+        int count = primaryJdbcTemplate.update(insertSql);
+        String insertSql2 = "INSERT appuser_invite(inviteCode,`status`,create_date) VALUES('a1',0,NOW())";
+        int count2 = primaryJdbcTemplate.update(insertSql2);
+//        String querySql = "SELECT count(*) as count FROM appuser ";
+//        Map<String, Object> userMap = primaryJdbcTemplate.queryForMap(querySql);//queryForList(querySql, Appuser.class);
+//        int userCount = Integer.parseInt(userMap.get("count").toString());
+        if (true) {
             throw new RuntimeException("111");
         }
+        return 1;
+    }
+
+    private int addUser2(String nickName, String userKey) {
+        String insertSql = "INSERT test2.appuser(nickName,userKey,create_date) VALUES('" + nickName + "','" + userKey + "',NOW()) ";
+        int count = primaryJdbcTemplate.update(insertSql);
+//        String insertSql2 = "INSERT appuser_invite(inviteCode,`status`,create_date) VALUES('a1',0,NOW())";
+//        int count2 = primaryJdbcTemplate.update(insertSql2);
         return 1;
     }
 }
