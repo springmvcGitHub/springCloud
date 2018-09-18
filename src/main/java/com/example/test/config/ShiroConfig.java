@@ -31,7 +31,7 @@ public class ShiroConfig {
         //游客，开发权限
         filterChainDefinitionMap.put("/guest/**", "anon");
         //用户，需要角色权限 “user”
-        filterChainDefinitionMap.put("/user/getDbData", "roles[user,admin]");
+        filterChainDefinitionMap.put("/user/getDbData", "roles[admin,user]");
         //管理员，需要角色权限 “admin”
         filterChainDefinitionMap.put("/admin/**", "roles[admin]");
         //开放登陆接口

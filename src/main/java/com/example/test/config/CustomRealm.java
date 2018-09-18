@@ -1,5 +1,7 @@
 package com.example.test.config;
 
+import com.example.test.pojo.Appuser;
+import com.mysql.jdbc.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -8,10 +10,13 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,9 +39,13 @@ public class CustomRealm extends AuthorizingRealm {
         System.out.println("————身份认证方法————");
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         // 从数据库获取对应用户名密码的用户
-        String queryPwdSql = "SELECT * FROM appuser WHERE userName='" + token.getUsername() + "'";
-        Map<String, Object> map = primaryJdbcTemplate.queryForMap(queryPwdSql,null);
-        String password = null == map.get("password") ? null : String.valueOf(map.get("password"));
+        String queryPwdSql = "SELECT password FROM appuser WHERE userName='" + token.getUsername() + "'";
+        List<Map<String,Object>> appuserList = primaryJdbcTemplate.queryForList(queryPwdSql);//primaryJdbcTemplate.queryForList(queryPwdSql, Appuser.class);
+        if(null == appuserList || appuserList.size() == 0){
+            throw new AccountException("用户名不正确");
+        }
+        Map<String,Object> map = appuserList.get(appuserList.size()-1);
+        String password = null == map || null == map.get("password") ? null : String.valueOf(map.get("password"));
         //String password = userMapper.getPassword(token.getUsername());
         if (null == password) {
             throw new AccountException("用户名不正确");
@@ -60,11 +69,15 @@ public class CustomRealm extends AuthorizingRealm {
         //获得该用户角色
         //String role = userMapper.getRole(username);
         String querySql = "SELECT rule from rule a LEFT JOIN appuser b ON a.userId = b.id WHERE b.userName='" + username + "'";
-        Map<String, Object> map = primaryJdbcTemplate.queryForMap(querySql);
-        String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+        List<Map<String, Object>> list = primaryJdbcTemplate.queryForList(querySql);
         Set<String> set = new HashSet<>();
-        //需要将 role 封装到 Set 作为 info.setRoles() 的参数
-        set.add(role);
+        for (int i = 0; i < list.size(); i++) {
+            Map<String,Object> map = list.get(i);
+            String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+            //需要将 role 封装到 Set 作为 info.setRoles() 的参数
+            set.add(role);
+        }
+
         //设置该用户拥有的角色
         info.setRoles(set);
         return info;

@@ -6,6 +6,7 @@ import com.example.test.pojo.Appuser;
 import com.example.test.pojo.User;
 import com.example.test.service.RestfulServiceImpl;
 import com.example.test.service.UserService;
+import com.mysql.jdbc.StringUtils;
 import com.netflix.discovery.converters.Auto;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -20,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -217,6 +215,7 @@ public class UserController {
 
     /**
      * 测试事务
+     *
      * @param userName
      * @return
      */
@@ -392,24 +391,29 @@ public class UserController {
         //根据权限，指定返回数据
         //String role = userMapper.getRole(username);
         String querySql = "SELECT rule from rule a LEFT JOIN appuser b ON a.userId = b.id WHERE b.userName='" + username + "'";
-        Map<String, Object> map = primaryJdbcTemplate.queryForMap(querySql);
-        String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+        List<Map<String, Object>> list = primaryJdbcTemplate.queryForList(querySql);
+        //Set<String> set = new HashSet<>();
+        String roleStr = "";
+        if (null != list && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                Map<String, Object> map = list.get(i);
+                String role = null == map.get("rule") ? "" : String.valueOf(map.get("rule"));
+                //需要将 role 封装到 Set 作为 info.setRoles() 的参数
+                //set.add(role);
+                if (!StringUtils.isNullOrEmpty(role)) {
+                    roleStr += "[" + role + "]";
+                }
+            }
+        }
+
         JSONObject jsonObject = new JSONObject();
-        String msg = "";
-        boolean success = false;
         String ssoId = "";
-        if ("user".equals(role)) {
-            msg = "登陆成功，user权限";
-            success = true;
-            ssoId = subject.getSession().getId().toString();
-        }
-        if ("admin".equals(role)) {
-            msg = "登陆成功，admin权限";
-            success = true;
-            ssoId = subject.getSession().getId().toString();
-        }
-        jsonObject.put("success", success);
-        jsonObject.put("msg", msg+",serverPort:"+serverPort+",jdbcUrl:"+jdbcUrl);
+        //if ("user".equals(role)) {
+        String msg = "登陆成功，" + roleStr + "权限";
+        ssoId = subject.getSession().getId().toString();
+        //}
+        jsonObject.put("success", true);
+        jsonObject.put("msg", msg + ",serverPort:" + serverPort + ",jdbcUrl:" + jdbcUrl);
         jsonObject.put("ssoId", ssoId);
         return jsonObject.toString();
     }
