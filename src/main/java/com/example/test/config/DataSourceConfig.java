@@ -40,28 +40,28 @@ public class DataSourceConfig {
         return new JdbcTemplate(dataSource);
     }
 
-    /**
-     * 加载second数据源----------------------------------------------------------------------------------
-     *
-     * @return
-     */
-    @Bean(name = "secondDataSource")
-    @Qualifier(value = "secondDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.second")
-    public DataSource secondDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    /**
-     * secondJdbcTemplate
-     *
-     * @param dataSource
-     * @return
-     */
-    @Bean(name = "secondJdbcTemplate")
-    public JdbcTemplate secondJdbcTemplate(@Qualifier(value = "secondDataSource") DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
+//    /**
+//     * 加载second数据源----------------------------------------------------------------------------------
+//     *
+//     * @return
+//     */
+//    @Bean(name = "secondDataSource")
+//    @Qualifier(value = "secondDataSource")
+//    @ConfigurationProperties(prefix = "spring.datasource.second")
+//    public DataSource secondDataSource() {
+//        return DataSourceBuilder.create().build();
+//    }
+//
+//    /**
+//     * secondJdbcTemplate
+//     *
+//     * @param dataSource
+//     * @return
+//     */
+//    @Bean(name = "secondJdbcTemplate")
+//    public JdbcTemplate secondJdbcTemplate(@Qualifier(value = "secondDataSource") DataSource dataSource) {
+//        return new JdbcTemplate(dataSource);
+//    }
 
     /**
      * 加载myCat数据源----------------------------------------------------------------------------------

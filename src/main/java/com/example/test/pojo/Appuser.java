@@ -3,12 +3,9 @@ package com.example.test.pojo;
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "appuser")
+
 public class Appuser implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     private long inviteCode;

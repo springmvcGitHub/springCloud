@@ -36,3 +36,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8090/regist/eureka/
+#如果mapper.xml中使用@Mapper注解，该配置可以忽略，by the way，classpath代表编译完后的classes目录下的内容
+mybatis:
+  mapper-locations: classpath:com/example/test/mapper/*Mapper.xml  #注意：一定要对应mapper映射xml文件的所在路径
+  type-aliases-package: com.example.test.pojo  # 注意：对应实体类的路径

@@ -1,9 +1,12 @@
 package com.example.test.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.test.mapper.AppUserMapper;
+import com.example.test.pojo.Appuser;
 import com.example.test.pojo.User;
 import com.example.test.service.RestfulServiceImpl;
 import com.example.test.service.UserService;
+import com.netflix.discovery.converters.Auto;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -53,6 +56,9 @@ public class UserController {
     @Autowired
     @Qualifier(value = "myCatJdbcTemplate")
     private JdbcTemplate myCatJdbcTemplate;
+
+    @Autowired
+    private AppUserMapper userMapper;
 
     @Value("${server.port}")
     private String serverPort;
@@ -431,6 +437,16 @@ public class UserController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", user.getId());
         jsonObject.put("userName", user.getUserName());
+        return jsonObject.toString();
+    }
+
+    @RequestMapping(value = "getAppuser", method = RequestMethod.GET)
+    public String getMethod() {
+        int count = userMapper.getAppuserCount();
+        Appuser appuser = userMapper.getAppuser();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", appuser.getId());
+        jsonObject.put("userName", appuser.getUserName());
         return jsonObject.toString();
     }
 }

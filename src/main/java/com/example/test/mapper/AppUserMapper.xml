@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.AppUserMapper">
+
+    <resultMap id="_appuser" type="com.example.test.pojo.Appuser">
+        <id column="id" property="id"/>
+        <result column="inviteCode" property="inviteCode"/>
+        <result column="nickName" property="nickName"/>
+        <result column="userKey" property="userKey"/>
+        <result column="userName" property="userName"/>
+        <result column="password" property="password"/>
+    </resultMap>
+
+    <select id="getAppuser" resultMap="_appuser" >
+        select * from appuser limit 1
+    </select>
+
+    <select id="getAppuserCount" resultType="Integer">
+        select count(*) from appuser
+    </select>
+</mapper>
